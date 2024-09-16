@@ -1,19 +1,16 @@
-const homeVueObject = {
+const app = Vue.createApp({
     data() {
         return {
-            date: null
+            productTitle: '',
+            productDescription: '',
+            productCategory: '',
+            productImageId: '',
+            imagePreview: null,
+            imagePreviewStatus: false,
+            productImages: []
         };
-    }
-}
-const app = Vue.createApp(homeVueObject);
-
-
-app.use(PrimeVue.Config, {
-    theme: {
-        preset: PrimeVue.Themes.Aura
-    }
+    },
+    methods: {}
 });
-
-app.component('p-datepicker', PrimeVue.DatePicker);
 
 app.mount('#app');

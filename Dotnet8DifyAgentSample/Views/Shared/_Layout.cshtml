@@ -4,12 +4,11 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - Dotnet8DifyAgentSample</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://unpkg.com/primevue/umd/primevue.min.js"></script>
-<script src="https://unpkg.com/@@primevue/themes/umd/aura.min.js"></script>
+<body class="bg-gray-100">
 @RenderBody()
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
