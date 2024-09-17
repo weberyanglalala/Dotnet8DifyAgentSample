@@ -1,3 +1,6 @@
+using Dotnet8DifyAgentSample.Services.DifyWorkflow;
+using Serilog;
+
 namespace Dotnet8DifyAgentSample;
 
 public class Program
@@ -6,8 +9,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Host.UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
+            .ReadFrom.Configuration(hostingContext.Configuration));
+
         // Add services to the container.
         builder.Services.AddControllersWithViews();
+        builder.Services.AddHttpClient();
+        builder.Services.AddScoped<DifyWorkflowService>();
 
         var app = builder.Build();
 
