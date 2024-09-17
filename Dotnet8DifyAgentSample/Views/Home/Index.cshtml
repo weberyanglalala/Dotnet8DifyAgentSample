@@ -15,35 +15,25 @@
                 </div>
                 <div class="pb-2">
                     <label for="product-description" class="block mb-2 text-sm font-medium text-[#111827]">產品敘述</label>
-                    <textarea v-model="productDescription" name="product-description" id="product-description" rows="4" class="mb-2 bg-gray-50 text-gray-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-gray-400 block w-full p-2.5 py-3 px-4" placeholder="Enter product description"></textarea>
+                    <textarea v-model="productDescription" name="product-description" id="product-description" rows="10" class="mb-2 bg-gray-50 text-gray-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-gray-400 block w-full p-2.5 py-3 px-4" placeholder="Enter product description"></textarea>
                 </div>
                 <div class="pb-2">
                     <label for="product-image" class="block mb-2 text-sm font-medium text-[#111827]">產品圖</label>
                     <input v-model="productImageId" type="text" name="product-image-id" class="mb-2 bg-gray-50 text-gray-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-gray-400 block w-full p-2.5 py-3 px-4" placeholder="Enter product image Id" autocomplete="off">
-                    <div id="image-preview" class="mt-2" v-show="imagePreviewStatus">
+                    <button class="w-full text-[#FFFFFF] bg-[#4F46E5] focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                            v-on:click="getImagePreview"
+                            v-if="imagePreviewStatus">
+                        取得產品預覽圖
+                    </button>
+                    <div id="image-preview" class="mt-2" v-show="imagePreview">
                         <img :src="imagePreview" alt="Preview" class="max-w-full h-auto rounded-lg">
                     </div>
                 </div>
-                <div class="pb-6">
-                    <label for="product-category" class="block mb-2 text-sm font-medium text-[#111827]">產品類別</label>
-                    <div class="relative">
-                        <select v-model="productCategory" name="product-category" id="product-category" class="appearance-none bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-gray-500 block w-full">
-                            <option value="">Select a category</option>
-                            <option value="electronics">Electronics</option>
-                            <option value="clothing">Clothing</option>
-                            <option value="books">Books</option>
-                            <option value="home">Home & Garden</option>
-                            <option value="toys">Toys & Games</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <button class="w-full text-[#FFFFFF] bg-[#4F46E5] focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-6"
-                        >dify 自動生成產品資訊</button>
+                <button class="w-full text-[#FFFFFF] bg-[#4F46E5] focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                        :disabled="!difyCreateButtonStatus"
+                        v-on:click="generateProductDetailsByDify">
+                    dify 自動生成產品資訊
+                </button>
             </div>
         </div>
     </div>
