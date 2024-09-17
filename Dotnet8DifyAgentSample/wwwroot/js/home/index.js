@@ -8,10 +8,12 @@ const app = Vue.createApp({
                 imagePreviewStatus: false,
                 productImagesUrl: '',
                 difyCreateButtonStatus: false,
+                isLoading: false
             };
         },
         methods: {
             generateProductDetailsByDify() {
+                this.showLoading();
                 fetch("api/Dify/CreateProductDetail", {
                     method: 'POST',
                     body: JSON.stringify({
@@ -28,8 +30,20 @@ const app = Vue.createApp({
                             this.productImageId = data.body.prompt_id;
                             this.imagePreviewStatus = true
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    })
+                    .finally(() => {
+                        this.hideLoading();
                     });
-            }
+            },
+            showLoading() {
+                this.isLoading = true;
+            },
+            hideLoading() {
+                this.isLoading = false;
+            },
         },
         watch: {
             productTitle: function (val) {
