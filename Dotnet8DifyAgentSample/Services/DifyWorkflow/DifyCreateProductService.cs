@@ -6,20 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dotnet8DifyAgentSample.Services.DifyWorkflow;
 
-public class DifyWorkflowService
+public class DifyCreateProductService
 {
     private readonly string _difyApiUrl;
     private readonly string _difyApiKey;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public DifyWorkflowService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+    public DifyCreateProductService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
         _difyApiUrl = configuration["DifyWorkFlowApiEndpoint"];
         _difyApiKey = configuration["DifyWorkFlowApiKey"];
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<RunWorkflowResponse> RunWorkflow([FromBody] RunWorkflowRequest request)
+    public async Task<CreateProductResponse> RunWorkflow([FromBody] CreateProductRequest request)
     {
         var client = _httpClientFactory.CreateClient();
         client.DefaultRequestHeaders.Authorization =
@@ -34,7 +34,7 @@ public class DifyWorkflowService
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadAsStringAsync();
-            var runWorkflowResponse = JsonSerializer.Deserialize<RunWorkflowResponse>(result);
+            var runWorkflowResponse = JsonSerializer.Deserialize<CreateProductResponse>(result);
             return runWorkflowResponse;
         }
         else

@@ -10,14 +10,14 @@ namespace Dotnet8DifyAgentSample.WebApi;
 [ApiController]
 public class DifyController : ControllerBase
 {
-    private readonly DifyWorkflowService _difyWorkflowService;
+    private readonly DifyCreateProductService _difyCreateProductService;
     private readonly string _difyUserId;
     private readonly ILogger<DifyController> _logger;
 
-    public DifyController(DifyWorkflowService difyWorkflowService, IConfiguration configuration,
+    public DifyController(DifyCreateProductService difyCreateProductService, IConfiguration configuration,
         ILogger<DifyController> logger)
     {
-        _difyWorkflowService = difyWorkflowService;
+        _difyCreateProductService = difyCreateProductService;
         _difyUserId = configuration["DifyUserId"];
         _logger = logger;
     }
@@ -27,7 +27,7 @@ public class DifyController : ControllerBase
     {
         var inputs = new Dictionary<string, object>();
         inputs.Add("product_name", request.ProductName);
-        var runWorkflowRequest = new RunWorkflowRequest
+        var runWorkflowRequest = new CreateProductRequest
         {
             Inputs = inputs,
             ResponseMode = "blocking",
@@ -35,7 +35,7 @@ public class DifyController : ControllerBase
         };
         try
         {
-            var response = await _difyWorkflowService.RunWorkflow(runWorkflowRequest);
+            var response = await _difyCreateProductService.RunWorkflow(runWorkflowRequest);
             var apiResponse = new ApiResponse
             {
                 IsSuccess = true,

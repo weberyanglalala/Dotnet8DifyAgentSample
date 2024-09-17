@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Dotnet8DifyAgentSample.Services.DifyWorkflow.Dtos;
 
-public class RunWorkflowResponse
+public class CreateProductResponse
 {
     [JsonPropertyName("workflow_run_id")]
     public string WorkflowRunId { get; set; }

@@ -15,7 +15,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddHttpClient();
-        builder.Services.AddScoped<DifyWorkflowService>();
+        builder.Services.AddScoped<DifyCreateProductService>();
 
         var app = builder.Build();
 
