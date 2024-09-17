@@ -9,13 +9,13 @@ namespace Dotnet8DifyAgentSample.Services.DifyWorkflow;
 public class DifyCreateProductService
 {
     private readonly string _difyApiUrl;
-    private readonly string _difyApiKey;
+    private readonly string _difyCreateProductDetailApiKey;
     private readonly IHttpClientFactory _httpClientFactory;
 
     public DifyCreateProductService(IConfiguration configuration, IHttpClientFactory httpClientFactory)
     {
         _difyApiUrl = configuration["DifyWorkFlowApiEndpoint"];
-        _difyApiKey = configuration["DifyWorkFlowApiKey"];
+        _difyCreateProductDetailApiKey = configuration["DifyCreateProductDetailApiKey"];
         _httpClientFactory = httpClientFactory;
     }
 
@@ -23,7 +23,7 @@ public class DifyCreateProductService
     {
         var client = _httpClientFactory.CreateClient();
         client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", _difyApiKey);
+            new AuthenticationHeaderValue("Bearer", _difyCreateProductDetailApiKey);
 
         var endpoint = $"{_difyApiUrl}/workflows/run";
         var jsonContent = JsonSerializer.Serialize(request);
