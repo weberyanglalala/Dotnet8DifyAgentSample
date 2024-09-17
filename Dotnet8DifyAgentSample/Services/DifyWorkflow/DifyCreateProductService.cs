@@ -2,7 +2,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Dotnet8DifyAgentSample.Services.DifyWorkflow.Dtos;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Dotnet8DifyAgentSample.Services.DifyWorkflow;
 
@@ -19,7 +18,7 @@ public class DifyCreateProductService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<CreateProductResponse> RunWorkflow([FromBody] CreateProductRequest request)
+    public async Task<DifyWorkflowResponse> CreateProductDetail(CreateProductRequest request)
     {
         var client = _httpClientFactory.CreateClient();
         client.DefaultRequestHeaders.Authorization =
@@ -34,7 +33,7 @@ public class DifyCreateProductService
         if (response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadAsStringAsync();
-            var runWorkflowResponse = JsonSerializer.Deserialize<CreateProductResponse>(result);
+            var runWorkflowResponse = JsonSerializer.Deserialize<DifyWorkflowResponse>(result);
             return runWorkflowResponse;
         }
         else

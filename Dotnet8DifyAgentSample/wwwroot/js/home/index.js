@@ -12,7 +12,7 @@ const app = Vue.createApp({
         },
         methods: {
             generateProductDetailsByDify() {
-                fetch("api/Dify/CreateWorkflow", {
+                fetch("api/Dify/CreateProductDetail", {
                     method: 'POST',
                     body: JSON.stringify({
                         "product_name": this.productTitle

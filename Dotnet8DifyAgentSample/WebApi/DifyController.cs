@@ -23,7 +23,7 @@ public class DifyController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateWorkflow([FromBody] CreateWorkflowRequest request)
+    public async Task<IActionResult> CreateProductDetail([FromBody] CreateWorkflowRequest request)
     {
         var inputs = new Dictionary<string, object>();
         inputs.Add("product_name", request.ProductName);
@@ -35,7 +35,7 @@ public class DifyController : ControllerBase
         };
         try
         {
-            var response = await _difyCreateProductService.RunWorkflow(runWorkflowRequest);
+            var response = await _difyCreateProductService.CreateProductDetail(runWorkflowRequest);
             var apiResponse = new ApiResponse
             {
                 IsSuccess = true,
