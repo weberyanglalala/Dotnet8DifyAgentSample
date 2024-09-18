@@ -1,4 +1,5 @@
 using Dotnet8DifyAgentSample.Services.DifyWorkflow;
+using Dotnet8DifyAgentSample.Services.OpenAI;
 using Serilog;
 
 namespace Dotnet8DifyAgentSample;
@@ -16,6 +17,7 @@ public class Program
         builder.Services.AddControllersWithViews();
         builder.Services.AddHttpClient();
         builder.Services.AddScoped<DifyCreateProductService>();
+        builder.Services.AddScoped<OpenAIService>();
 
         var app = builder.Build();
 
