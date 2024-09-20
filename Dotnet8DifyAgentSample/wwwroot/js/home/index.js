@@ -3,7 +3,6 @@ const app = Vue.createApp({
         return {
             productTitle: '',
             productDescription: '',
-            productCategory: '',
             productImageId: '',
             imagePreview: null,
             imagePreviewStatus: false,
