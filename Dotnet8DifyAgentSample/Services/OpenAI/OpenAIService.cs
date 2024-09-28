@@ -16,7 +16,7 @@ public class OpenAIService
     public async Task<FilterResult> GetFilterResultAsync(string prompt)
     {
         ChatClient client = new ChatClient("gpt-4o-mini", _apiKey);
-        
+
         ChatCompletionOptions options = new()
         {
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
@@ -48,7 +48,7 @@ public class OpenAIService
                                                   """),
                 strictSchemaEnabled: true)
         };
-        
+
         List<ChatMessage> messages =
         [
             new SystemChatMessage(
@@ -60,5 +60,22 @@ public class OpenAIService
         var chatCompletionText = chatCompletion.Content[0].Text;
         var result = JsonSerializer.Deserialize<FilterResult>(chatCompletionText);
         return result;
+    }
+
+    public async Task<string> GetSimpleChatCompletionAsync(string prompt)
+    {
+        ChatClient client = new ChatClient("gpt-4o-mini", _apiKey);
+        ChatCompletionOptions options = new()
+        {
+            MaxTokens = 500,
+            Temperature = 0.7f,
+        };
+        List<ChatMessage> messages =
+        [
+            new UserChatMessage(prompt),
+        ];
+        ChatCompletion chatCompletion = await client.CompleteChatAsync(messages, options);
+        var chatCompletionText = chatCompletion.Content[0].Text;
+        return chatCompletionText;
     }
 }

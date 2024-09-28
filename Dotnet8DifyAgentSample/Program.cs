@@ -1,3 +1,4 @@
+using Dotnet8DifyAgentSample.Filters;
 using Dotnet8DifyAgentSample.Services.DifyWorkflow;
 using Dotnet8DifyAgentSample.Services.OpenAI;
 using Serilog;
@@ -18,6 +19,17 @@ public class Program
         builder.Services.AddHttpClient();
         builder.Services.AddScoped<DifyCreateProductService>();
         builder.Services.AddScoped<OpenAIService>();
+        builder.Services.AddScoped<CustomExceptionFilter>();
+        builder.Services.AddScoped<CustomValidationFilter>();
+        builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<CustomValidationFilter>();
+            })
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
 
         var app = builder.Build();
 
