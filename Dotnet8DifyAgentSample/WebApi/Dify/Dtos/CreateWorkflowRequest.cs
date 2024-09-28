@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Dotnet8DifyAgentSample.Models.Dtos;
+namespace Dotnet8DifyAgentSample.WebApi.Dify.Dtos;
 
 public class CreateWorkflowRequest
 {

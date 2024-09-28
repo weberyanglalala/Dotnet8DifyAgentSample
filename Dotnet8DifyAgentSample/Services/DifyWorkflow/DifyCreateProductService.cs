@@ -18,7 +18,7 @@ public class DifyCreateProductService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<DifyWorkflowResponse> CreateProductDetail(CreateProductRequest request)
+    public async Task<DifyWorkflowResponse> CreateProductDetail(DifyWorkflowRequest request)
     {
         var client = _httpClientFactory.CreateClient();
         client.DefaultRequestHeaders.Authorization =

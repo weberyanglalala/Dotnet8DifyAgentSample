@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Dotnet8DifyAgentSample.Services.DifyWorkflow.Dtos;
 
-public class CreateProductRequest
+public class DifyWorkflowRequest
 {
     [JsonPropertyName("inputs")]
     public Dictionary<string, object> Inputs { get; set; } = new Dictionary<string, object>();

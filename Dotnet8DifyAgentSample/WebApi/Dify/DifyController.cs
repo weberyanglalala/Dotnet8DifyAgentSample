@@ -1,10 +1,10 @@
 using Dotnet8DifyAgentSample.Models;
-using Dotnet8DifyAgentSample.Models.Dtos;
 using Dotnet8DifyAgentSample.Services.DifyWorkflow;
 using Dotnet8DifyAgentSample.Services.DifyWorkflow.Dtos;
+using Dotnet8DifyAgentSample.WebApi.Dify.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Dotnet8DifyAgentSample.WebApi;
+namespace Dotnet8DifyAgentSample.WebApi.Dify;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
@@ -27,7 +27,7 @@ public class DifyController : ControllerBase
     {
         var inputs = new Dictionary<string, object>();
         inputs.Add("product_name", request.ProductName);
-        var runWorkflowRequest = new CreateProductRequest
+        var runWorkflowRequest = new DifyWorkflowRequest
         {
             Inputs = inputs,
             ResponseMode = "blocking",
