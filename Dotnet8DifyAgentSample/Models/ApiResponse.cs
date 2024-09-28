@@ -10,5 +10,6 @@ public class ApiResponse
 public enum ApiStatusCode
 {
     Success = 200,
-    Error = 500
+    Error = 500,
+    BadRequest = 400
 }
