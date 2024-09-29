@@ -1,7 +1,10 @@
 using Dotnet8DifyAgentSample.Filters;
+using Dotnet8DifyAgentSample.Models;
 using Dotnet8DifyAgentSample.Services.DifyWorkflow;
 using Dotnet8DifyAgentSample.Services.OpenAI;
+using Dotnet8DifyAgentSample.Services.ProductService;
 using Dotnet8DifyAgentSample.Services.SemanticKernel;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Serilog;
 
@@ -34,6 +37,23 @@ public class Program
         });
         builder.Services.AddScoped<ProductDetailGenerateClient>();
 
+        // Product Create Service
+        builder.Services.AddDbContext<SkDbContext>(options =>
+        {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+        });
+        builder.Services.AddScoped<ProductServiceByEFCore>();
+        builder.Services.AddScoped<ProductEFCorePlugin>();
+        
+        builder.Services.AddScoped<ProductChatService>(sp =>
+        {
+            var kernelBuilder = Kernel.CreateBuilder();
+            kernelBuilder.Services.AddOpenAIChatCompletion("gpt-4o-2024-08-06", builder.Configuration["OpenAIApiKey"]);
+            var productService = sp.GetRequiredService<ProductServiceByEFCore>();
+            kernelBuilder.Plugins.AddFromObject(new ProductEFCorePlugin(productService));
+            return new ProductChatService(kernelBuilder.Build());
+        });
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

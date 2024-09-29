@@ -17,7 +17,7 @@ namespace Dotnet8DifyAgentSample.Filters
             _logger = logger;
         }
 
-        public async void OnException(ExceptionContext context)
+        public void OnException(ExceptionContext context)
         {
             var request = context.HttpContext.Request;
             request.EnableBuffering();

@@ -10,10 +10,13 @@ namespace Dotnet8DifyAgentSample.WebApi.SemanticKernel;
 public class SemanticKernelController : ControllerBase
 {
     private readonly ProductDetailGenerateClient _productDetailGenerateClient;
+    private readonly ProductChatService _productChatService;
 
-    public SemanticKernelController(ProductDetailGenerateClient productDetailGenerateClient)
+    public SemanticKernelController(ProductDetailGenerateClient productDetailGenerateClient,
+        ProductChatService productChatService)
     {
         _productDetailGenerateClient = productDetailGenerateClient;
+        _productChatService = productChatService;
     }
 
     [HttpPost]
@@ -28,6 +31,19 @@ public class SemanticKernelController : ControllerBase
             {
                 ProductDescription = response
             }
+        };
+        return Ok(apiResponse);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> GetProductChatResult([FromBody] GetProductChatResultRequest request)
+    {
+        var response = await _productChatService.GetResponse(request.Input);
+        var apiResponse = new ApiResponse()
+        {
+            IsSuccess = true,
+            Code = ApiStatusCode.Success,
+            Body = response
         };
         return Ok(apiResponse);
     }
