@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "description": "This plugin is used to create a product detail by providing the product name",
+  "completion": {
+    "max_tokens": 1000,
+    "temperature": 1,
+    "top_p": 0.0,
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0
+  },
+  "input_variables": [
+    {
+      "name": "product_name",
+      "description": "產品名稱",
+      "type": "string",
+      "is_required": true
+    }
+  ]
+}
