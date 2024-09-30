@@ -1,17 +1,23 @@
+using System.Diagnostics.CodeAnalysis;
 using Dotnet8DifyAgentSample.Filters;
 using Dotnet8DifyAgentSample.Models;
 using Dotnet8DifyAgentSample.Services.DifyWorkflow;
 using Dotnet8DifyAgentSample.Services.OpenAI;
 using Dotnet8DifyAgentSample.Services.ProductService;
 using Dotnet8DifyAgentSample.Services.SemanticKernel;
+using Dotnet8DifyAgentSample.Services.SemanticProductSearch;
+using Dotnet8DifyAgentSample.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
+using MongoDB.Driver;
 using Serilog;
 
 namespace Dotnet8DifyAgentSample;
 
 public class Program
 {
+    [Experimental("SKEXP0020")]
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -44,7 +50,7 @@ public class Program
         });
         builder.Services.AddScoped<ProductServiceByEFCore>();
         builder.Services.AddScoped<ProductEFCorePlugin>();
-        
+
         builder.Services.AddScoped<ProductChatService>(sp =>
         {
             var kernelBuilder = Kernel.CreateBuilder();
@@ -53,7 +59,18 @@ public class Program
             kernelBuilder.Plugins.AddFromObject(new ProductEFCorePlugin(productService));
             return new ProductChatService(kernelBuilder.Build());
         });
-        
+
+        // Product Semantic Search Service
+        builder.Services
+            .Configure<MongoDbVectorSettings>(builder.Configuration.GetSection(nameof(MongoDbVectorSettings)))
+            .AddSingleton(settings => settings.GetRequiredService<IOptions<MongoDbVectorSettings>>().Value);
+        builder.Services.AddSingleton<IMongoClient>(sp =>
+        {
+            var settings = sp.GetRequiredService<MongoDbVectorSettings>();
+            return new MongoClient(settings.ConnectionString);
+        });
+        builder.Services.AddScoped<SemanticProductSearchService>();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Dotnet8DifyAgentSample.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -94,5 +95,13 @@ public class ProductServiceByEFCore
 
         // Execute the query and return the result
         return await query.CountAsync();
+    }
+
+    public IQueryable<Product> GetProductsByPageAsQueryable(int skipIndex, int count)
+    {
+        return _dbContext.Products
+            .OrderBy(p => p.Id)
+            .Skip(skipIndex - 1)
+            .Take(count);
     }
 }
