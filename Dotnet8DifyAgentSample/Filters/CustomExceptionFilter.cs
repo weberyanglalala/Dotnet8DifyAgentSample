@@ -20,14 +20,7 @@ namespace Dotnet8DifyAgentSample.Filters
         public void OnException(ExceptionContext context)
         {
             var request = context.HttpContext.Request;
-            request.EnableBuffering();
             var userId = context.HttpContext.User.Identity?.Name ?? "Anonymous";
-            string body;
-            using (var reader = new StreamReader(request.Body, Encoding.UTF8, true, 1024, true))
-            {
-                body = reader.ReadToEndAsync().Result;
-                request.Body.Position = 0;
-            }
 	 
             request.Body.Position = 0;
             var requestDetails = new Dictionary<string, object>
@@ -36,8 +29,7 @@ namespace Dotnet8DifyAgentSample.Filters
                 ["Path"] = request.Path.Value,
                 ["Method"] = request.Method,
                 ["Headers"] = request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()),
-                ["QueryString"] = HttpUtility.UrlDecode(request.QueryString.Value, Encoding.UTF8),
-                ["Body"] = body
+                ["QueryString"] = HttpUtility.UrlDecode(request.QueryString.Value, Encoding.UTF8)
             };
 
             var options = new JsonSerializerOptions
