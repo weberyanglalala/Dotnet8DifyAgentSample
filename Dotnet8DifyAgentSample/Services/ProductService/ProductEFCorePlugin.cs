@@ -71,12 +71,13 @@ public class ProductEFCorePlugin
     [KernelFunction("GetProductFilteredResult")]
     [Description("Get the products that match the filter criteria")]
     public async Task<IEnumerable<Product>> GetFilteredProducts(
+        [Description("The name filter")] string nameFilter,
         [Description("The minimum sale price filter could be null")] decimal? minPrice,
         [Description("The maximum sale price filter could be null")] decimal? maxPrice,
         [Description("The page number default page 1")] int page,
         [Description("The page size default is 10")] int pageSize)
     {
-        var products = await _productService.GetFilteredAsync(null, minPrice, maxPrice, page, pageSize);
+        var products = await _productService.GetFilteredAsync(nameFilter, minPrice, maxPrice, page, pageSize);
         return products;
     }
 }
