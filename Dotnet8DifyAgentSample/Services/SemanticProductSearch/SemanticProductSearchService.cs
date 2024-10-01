@@ -27,18 +27,24 @@ public class SemanticProductSearchService
     private readonly ILogger<SemanticProductSearchService> _logger;
 
     public SemanticProductSearchService(MongoDbVectorSettings mongoDbVectorSettings, IMongoClient mongoClient,
-        IConfiguration configuration, ILogger<SemanticProductSearchService> logger, ProductServiceByEFCore productServiceByEfCore)
+        IConfiguration configuration, ILogger<SemanticProductSearchService> logger,
+        ProductServiceByEFCore productServiceByEfCore)
     {
+        // Initialize the openAI API key for text embedding generation
+        _openAiApiKey = configuration["OpenAIApiKey"];
+        // Initialize the mongodb settings: connection string, search index name, database name, collection name
         _mongoDbVectorSettings = mongoDbVectorSettings;
         _connectionString = _mongoDbVectorSettings.ConnectionString;
         _searchIndexName = _mongoDbVectorSettings.SearchIndexName;
         _databaseName = _mongoDbVectorSettings.DatabaseName;
         _collectionName = _mongoDbVectorSettings.CollectionName;
-        _openAiApiKey = configuration["OpenAIApiKey"];
+        // Initialize the memory store: MongoDBMemoryStore(or you can use other memory store like QdrantMemoryStore, etc.)
         _mongoDBMemoryStore = new MongoDBMemoryStore(_connectionString, _databaseName, _searchIndexName);
+        // Initialize the memory builder: set up text embedding generation and memory store
         _memoryBuilder = new MemoryBuilder();
         _memoryBuilder.WithOpenAITextEmbeddingGeneration("text-embedding-ada-002", _openAiApiKey);
         _memoryBuilder.WithMemoryStore(_mongoDBMemoryStore);
+        // Build the memory: create the semantic text memory
         _semanticTextMemory = _memoryBuilder.Build();
         _mongoClient = mongoClient;
         _logger = logger;
@@ -67,18 +73,18 @@ public class SemanticProductSearchService
 
     public async Task FetchAndSaveProductDocumentsAsync(int startIndex, int limitSize)
     {
+        // Fetch and save product documents to the semantic text memory
         await FetchAndSaveProductDocuments(_semanticTextMemory, startIndex, limitSize);
     }
 
     private async Task FetchAndSaveProductDocuments(ISemanticTextMemory memory, int startIndex, int limitSize)
     {
-        
         List<Product> products = _productServiceByEFCore.GetProductsByPageAsQueryable(startIndex, limitSize).ToList();
         foreach (var product in products)
         {
             try
             {
-                _logger.LogInformation($"Processing {product.Id}...");
+                _logger.LogInformation($"Processing {product.Id}, {product.Name}...");
                 await memory.SaveInformationAsync(
                     collection: _collectionName,
                     text: product.Description,
