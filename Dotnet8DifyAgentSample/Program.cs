@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Dotnet8DifyAgentSample.Filters;
 using Dotnet8DifyAgentSample.Models;
+using Dotnet8DifyAgentSample.Models.MongoDB;
 using Dotnet8DifyAgentSample.Services.DifyWorkflow;
 using Dotnet8DifyAgentSample.Services.OpenAI;
 using Dotnet8DifyAgentSample.Services.ProductService;
@@ -63,13 +64,17 @@ public class Program
         // Product Semantic Search Service
         builder.Services
             .Configure<MongoDbSettings>(builder.Configuration.GetSection(nameof(MongoDbSettings)))
-            .AddSingleton(settings => settings.GetRequiredService<IOptions<MongoDbSettings>>().Value);
+            .AddSingleton(sp => sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
+        
         builder.Services.AddSingleton<IMongoClient>(sp =>
         {
             var settings = sp.GetRequiredService<MongoDbSettings>();
             return new MongoClient(settings.ConnectionString);
         });
+        
         builder.Services.AddScoped<SemanticProductSearchService>();
+        
+        builder.Services.AddScoped<MongoRepository>();
 
         var app = builder.Build();
 
