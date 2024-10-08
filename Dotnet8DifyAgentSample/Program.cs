@@ -42,7 +42,7 @@ public class Program
             kernelBuilder.Services.AddOpenAIChatCompletion("gpt-4o-2024-08-06", builder.Configuration["OpenAIApiKey"]);
             return kernelBuilder.Build();
         });
-        builder.Services.AddScoped<ProductDetailGenerateClient>();
+        builder.Services.AddScoped<ProductDetailGenerateService>();
 
         // Product Create Service
         builder.Services.AddDbContext<SkDbContext>(options =>

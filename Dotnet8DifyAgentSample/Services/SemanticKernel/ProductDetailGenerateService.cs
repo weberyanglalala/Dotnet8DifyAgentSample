@@ -2,11 +2,11 @@ using Microsoft.SemanticKernel;
 
 namespace Dotnet8DifyAgentSample.Services.SemanticKernel;
 
-public class ProductDetailGenerateClient
+public class ProductDetailGenerateService
 {
     private readonly Kernel _kernel;
 
-    public ProductDetailGenerateClient(Kernel kernel)
+    public ProductDetailGenerateService(Kernel kernel)
     {
         _kernel = kernel;
     }

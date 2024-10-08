@@ -12,14 +12,14 @@ namespace Dotnet8DifyAgentSample.WebApi.SemanticKernel;
 [Experimental("SKEXP0020")]
 public class SemanticKernelController : ControllerBase
 {
-    private readonly ProductDetailGenerateClient _productDetailGenerateClient;
+    private readonly ProductDetailGenerateService _productDetailGenerateService;
     private readonly ProductChatService _productChatService;
     private readonly SemanticProductSearchService _semanticProductSearchService;
 
-    public SemanticKernelController(ProductDetailGenerateClient productDetailGenerateClient,
+    public SemanticKernelController(ProductDetailGenerateService productDetailGenerateService,
         ProductChatService productChatService, SemanticProductSearchService semanticProductSearchService)
     {
-        _productDetailGenerateClient = productDetailGenerateClient;
+        _productDetailGenerateService = productDetailGenerateService;
         _productChatService = productChatService;
         _semanticProductSearchService = semanticProductSearchService;
     }
@@ -27,7 +27,7 @@ public class SemanticKernelController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateProductDetail(CreateProductDetailRequest request)
     {
-        var response = await _productDetailGenerateClient.CreateProductDetail(request.ProductName);
+        var response = await _productDetailGenerateService.CreateProductDetail(request.ProductName);
         var apiResponse = new ApiResponse()
         {
             IsSuccess = true,
