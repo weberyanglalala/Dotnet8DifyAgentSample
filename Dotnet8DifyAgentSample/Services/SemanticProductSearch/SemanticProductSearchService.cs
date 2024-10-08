@@ -16,7 +16,7 @@ public class SemanticProductSearchService
     private readonly ProductServiceByEFCore _productServiceByEFCore;
     private readonly MemoryBuilder _memoryBuilder;
     private readonly ISemanticTextMemory _semanticTextMemory;
-    private readonly MongoDbVectorSettings _mongoDbVectorSettings;
+    private readonly MongoDbSettings _mongoDbSettings;
     private readonly MongoDBMemoryStore _mongoDBMemoryStore;
     private readonly string _openAiApiKey;
     private readonly string _connectionString;
@@ -26,18 +26,18 @@ public class SemanticProductSearchService
     private readonly IMongoClient _mongoClient;
     private readonly ILogger<SemanticProductSearchService> _logger;
 
-    public SemanticProductSearchService(MongoDbVectorSettings mongoDbVectorSettings, IMongoClient mongoClient,
+    public SemanticProductSearchService(MongoDbSettings mongoDbSettings, IMongoClient mongoClient,
         IConfiguration configuration, ILogger<SemanticProductSearchService> logger,
         ProductServiceByEFCore productServiceByEfCore)
     {
         // Initialize the openAI API key for text embedding generation
         _openAiApiKey = configuration["OpenAIApiKey"];
         // Initialize the mongodb settings: connection string, search index name, database name, collection name
-        _mongoDbVectorSettings = mongoDbVectorSettings;
-        _connectionString = _mongoDbVectorSettings.ConnectionString;
-        _searchIndexName = _mongoDbVectorSettings.SearchIndexName;
-        _databaseName = _mongoDbVectorSettings.DatabaseName;
-        _collectionName = _mongoDbVectorSettings.CollectionName;
+        _mongoDbSettings = mongoDbSettings;
+        _connectionString = _mongoDbSettings.ConnectionString;
+        _searchIndexName = _mongoDbSettings.SearchIndexName;
+        _databaseName = _mongoDbSettings.VectorDatabaseName;
+        _collectionName = _mongoDbSettings.VectorCollectionName;
         // Initialize the memory store: MongoDBMemoryStore(or you can use other memory store like QdrantMemoryStore, etc.)
         _mongoDBMemoryStore = new MongoDBMemoryStore(_connectionString, _databaseName, _searchIndexName);
         // Initialize the memory builder: set up text embedding generation and memory store

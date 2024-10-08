@@ -62,11 +62,11 @@ public class Program
 
         // Product Semantic Search Service
         builder.Services
-            .Configure<MongoDbVectorSettings>(builder.Configuration.GetSection(nameof(MongoDbVectorSettings)))
-            .AddSingleton(settings => settings.GetRequiredService<IOptions<MongoDbVectorSettings>>().Value);
+            .Configure<MongoDbSettings>(builder.Configuration.GetSection(nameof(MongoDbSettings)))
+            .AddSingleton(settings => settings.GetRequiredService<IOptions<MongoDbSettings>>().Value);
         builder.Services.AddSingleton<IMongoClient>(sp =>
         {
-            var settings = sp.GetRequiredService<MongoDbVectorSettings>();
+            var settings = sp.GetRequiredService<MongoDbSettings>();
             return new MongoClient(settings.ConnectionString);
         });
         builder.Services.AddScoped<SemanticProductSearchService>();
