@@ -27,38 +27,69 @@ public class MongoRepository
         await _users.InsertOneAsync(user);
     }
 
+    public async Task<User> GetUserByLineUserIdAsync(string lineUserId)
+    {
+        var filter = Builders<User>.Filter.Eq(u => u.LineUserId, lineUserId);
+        return await _users.Find(filter).FirstOrDefaultAsync();
+    }
+    
+    
     public async Task<User> GetUserAsync(string userId)
     {
         var filter = Builders<User>.Filter.Eq(u => u.UserId, userId);
         return await _users.Find(filter).FirstOrDefaultAsync();
     }
 
-    public async Task CreateConversationByUserIdAsync(string userId, Conversation conversation)
+    public async Task<Conversation> CreateConversationByUserIdAsync(string userId, Conversation conversation)
     {
         conversation.UserId = userId;
         await _conversations.InsertOneAsync(conversation);
+        return conversation;
+    }
+    
+    public async Task<Conversation> GetConversationAsync(string conversationId)
+    {
+        var filter = Builders<Conversation>.Filter.Eq(c => c.ConversationId, conversationId);
+        return await _conversations.Find(filter).FirstOrDefaultAsync();
+    }
+    
+    public async Task<Conversation> UpdateConversationAsync(Conversation conversation)
+    {
+        var filter = Builders<Conversation>.Filter.Eq(c => c.ConversationId, conversation.ConversationId);
+        await _conversations.ReplaceOneAsync(filter, conversation);
+        return conversation;
     }
 
     public async Task<List<Conversation>> GetConversationsByUserIdAsync(string userId)
     {
         var filter = Builders<Conversation>.Filter.Eq(c => c.UserId, userId);
-        return await _conversations.Find(filter).ToListAsync();
+        var sort = Builders<Conversation>.Sort.Descending(c => c.CreateAt);
+        return await _conversations.Find(filter).Sort(sort).ToListAsync();
+    }
+    
+    public async Task<Conversation> GetLatestConversationByUserIdAsync(string userId)
+    {
+        var filter = Builders<Conversation>.Filter.Eq(c => c.UserId, userId);
+        var sort = Builders<Conversation>.Sort.Descending(c => c.CreateAt);
+        return await _conversations.Find(filter).Sort(sort).FirstOrDefaultAsync();
     }
 
-    public async Task CreateMessageByConversationIdAsync(string conversationId, Message message)
+    public async Task<Message> CreateMessageByConversationIdAsync(string conversationId, Message message)
     {
         message.ConversationId = conversationId;
         message.Timestamp = DateTime.UtcNow;
         await _messages.InsertOneAsync(message);
+        return message;
     }
 
     public async Task<List<Message>> GetMessagesByConversationIdAsync(string conversationId)
     {
         var filter = Builders<Message>.Filter.Eq(m => m.ConversationId, conversationId);
-        return await _messages.Find(filter).ToListAsync();
+        var sort = Builders<Message>.Sort.Ascending(m => m.Timestamp);
+        return await _messages.Find(filter).Sort(sort).ToListAsync();
     }
 
-    public async Task CreateConversationWithMessageAsync(string userId, Conversation conversation, Message message)
+    public async Task<Conversation> CreateConversationWithMessageAsync(string userId, Conversation conversation, Message message)
     {
         using var session = await _mongoClient.StartSessionAsync();
         session.StartTransaction();
@@ -73,6 +104,7 @@ public class MongoRepository
             await _messages.InsertOneAsync(session, message);
 
             await session.CommitTransactionAsync();
+            return conversation;
         }
         catch (Exception)
         {

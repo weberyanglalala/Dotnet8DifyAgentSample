@@ -3,6 +3,7 @@ using Dotnet8DifyAgentSample.Filters;
 using Dotnet8DifyAgentSample.Models;
 using Dotnet8DifyAgentSample.Models.MongoDB;
 using Dotnet8DifyAgentSample.Services.DifyWorkflow;
+using Dotnet8DifyAgentSample.Services.LineMessage;
 using Dotnet8DifyAgentSample.Services.OpenAI;
 using Dotnet8DifyAgentSample.Services.ProductService;
 using Dotnet8DifyAgentSample.Services.SemanticKernel;
@@ -43,6 +44,7 @@ public class Program
             return kernelBuilder.Build();
         });
         builder.Services.AddScoped<ProductDetailGenerateService>();
+        builder.Services.AddScoped<ChatSummarizationService>();
 
         // Product Create Service
         builder.Services.AddDbContext<SkDbContext>(options =>
@@ -57,6 +59,7 @@ public class Program
             var kernelBuilder = Kernel.CreateBuilder();
             kernelBuilder.Services.AddOpenAIChatCompletion("gpt-4o-2024-08-06", builder.Configuration["OpenAIApiKey"]);
             var productService = sp.GetRequiredService<ProductServiceByEFCore>();
+
             kernelBuilder.Plugins.AddFromObject(new ProductEFCorePlugin(productService));
             return new ProductChatService(kernelBuilder.Build());
         });
@@ -65,16 +68,31 @@ public class Program
         builder.Services
             .Configure<MongoDbSettings>(builder.Configuration.GetSection(nameof(MongoDbSettings)))
             .AddSingleton(sp => sp.GetRequiredService<IOptions<MongoDbSettings>>().Value);
-        
+
         builder.Services.AddSingleton<IMongoClient>(sp =>
         {
             var settings = sp.GetRequiredService<MongoDbSettings>();
             return new MongoClient(settings.ConnectionString);
         });
-        
+
         builder.Services.AddScoped<SemanticProductSearchService>();
-        
+
         builder.Services.AddScoped<MongoRepository>();
+
+        builder.Services
+            .Configure<LineMessagingApiSettings>(builder.Configuration.GetSection(nameof(LineMessagingApiSettings)))
+            .AddSingleton(settings => settings.GetRequiredService<IOptions<LineMessagingApiSettings>>().Value);
+
+        builder.Services.AddScoped<TravelChatServicePlugin>();
+        builder.Services.AddScoped<TravelChatService>(sp =>
+        {
+            var kernelBuilder = Kernel.CreateBuilder();
+            kernelBuilder.Services.AddOpenAIChatCompletion("gpt-4o-2024-08-06", builder.Configuration["OpenAIApiKey"]);
+            var semanticProductSearchService = sp.GetRequiredService<SemanticProductSearchService>();
+            kernelBuilder.Plugins.AddFromObject(new TravelChatServicePlugin(semanticProductSearchService));
+            return new TravelChatService(kernelBuilder.Build());
+        });
+        builder.Services.AddScoped<LineMessageService>();
 
         var app = builder.Build();
 

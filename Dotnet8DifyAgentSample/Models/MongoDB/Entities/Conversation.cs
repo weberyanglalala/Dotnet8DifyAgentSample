@@ -15,4 +15,10 @@ public class Conversation
 
     [BsonElement("Summarization")]
     public string Summarization { get; set; }
+
+    [BsonElement("CreateAt")]
+    public DateTime CreateAt { get; set; }
+
+    [BsonElement("UpdateAt")]
+    public DateTime UpdateAt { get; set; }
 }
