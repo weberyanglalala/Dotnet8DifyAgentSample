@@ -7,11 +7,12 @@ namespace Dotnet8DifyAgentSample.Services.LineMessage;
 public class LineMessageService
 {
     private readonly MongoRepository _repository;
-    private const int MaxMessagesPerConversation = 30; // 設定對話紀錄上限
+    private const int MaxMessagesPerConversation = 10; // 設定對話紀錄上限
     private readonly ChatSummarizationService _chatSummarizationService;
     private readonly TravelChatService _travelChatService;
 
-    public LineMessageService(MongoRepository repository, ChatSummarizationService chatSummarizationService, TravelChatService travelChatService)
+    public LineMessageService(MongoRepository repository, ChatSummarizationService chatSummarizationService,
+        TravelChatService travelChatService)
     {
         _repository = repository;
         _chatSummarizationService = chatSummarizationService;
@@ -36,7 +37,7 @@ public class LineMessageService
         // 7. 回傳訊息
         return chatResponse;
     }
-    
+
     private async Task<Conversation> UpdateSummarization(string conversationId)
     {
         var conversation = await _repository.GetConversationAsync(conversationId);
@@ -52,6 +53,7 @@ public class LineMessageService
             var newSummarization = await _chatSummarizationService.GetSummarization(stringChatHistory);
             conversation.Summarization = newSummarization;
         }
+
         await _repository.UpdateConversationAsync(conversation);
         return conversation;
     }
@@ -61,7 +63,7 @@ public class LineMessageService
         var user = await _repository.GetUserByLineUserIdAsync(lineUserId);
         if (user == null)
         {
-            user = new User { LineUserId = lineUserId };
+            user = new User { LineUserId = lineUserId, CreateAt = DateTime.Now };
             await _repository.CreateUserAsync(user);
         }
 
@@ -71,13 +73,13 @@ public class LineMessageService
     private async Task<Conversation> GetOrCreateConversation(string userId)
     {
         var latestConversation = await _repository.GetLatestConversationByUserIdAsync(userId);
-        
+
         if (latestConversation == null || await IsConversationFull(latestConversation.ConversationId))
         {
             // 如果沒有對話紀錄或最新的對話已滿，創建新的對話
             return await CreateConversationByUserId(userId);
         }
-        
+
         return latestConversation;
     }
 
@@ -89,12 +91,13 @@ public class LineMessageService
 
     private async Task<Conversation> CreateConversationByUserId(string userId)
     {
-        var conversation = new Conversation { UserId = userId };
+        var conversation = new Conversation { UserId = userId, CreateAt = DateTime.Now };
         await _repository.CreateConversationByUserIdAsync(userId, conversation);
         return conversation;
     }
 
-    private async Task<Message> CreateMessageByConversationIdAsync(string conversationId, string messageContent, MessageType messageType)
+    private async Task<Message> CreateMessageByConversationIdAsync(string conversationId, string messageContent,
+        MessageType messageType)
     {
         var message = new Message
         {
@@ -102,7 +105,7 @@ public class LineMessageService
             Content = messageContent,
             Timestamp = DateTime.UtcNow
         };
-        var result =  await _repository.CreateMessageByConversationIdAsync(conversationId, message);
+        var result = await _repository.CreateMessageByConversationIdAsync(conversationId, message);
         return result;
     }
 }
