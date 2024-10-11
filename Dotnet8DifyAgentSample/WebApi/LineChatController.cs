@@ -11,7 +11,8 @@ public class ChatController : LineWebHookControllerBase
     private readonly Bot _bot;
     private readonly LineMessageService _lineMessageService;
 
-    public ChatController(LineMessagingApiSettings lineMessagingApiSettingsSettings, LineMessageService lineMessageService)
+    public ChatController(LineMessagingApiSettings lineMessagingApiSettingsSettings,
+        LineMessageService lineMessageService)
     {
         _lineMessageService = lineMessageService;
         _adminUserId = lineMessagingApiSettingsSettings.UserId;
@@ -28,8 +29,11 @@ public class ChatController : LineWebHookControllerBase
             foreach (var lineEvent in ReceivedMessage.events)
             {
                 var lineUserId = lineEvent.source.userId;
+                var user = GetUserInfo(lineUserId);
                 _bot.DisplayLoadingAnimation(lineEvent.source.userId, 20);
-                var responseMessage = await _lineMessageService.ProcessMessageAsync(lineUserId, lineEvent.message.text);
+                var responseMessage =
+                    await _lineMessageService.ProcessMessageAsync(user.userId, user.displayName,
+                        lineEvent.message.text);
                 _bot.ReplyMessage(lineEvent.replyToken, responseMessage);
             }
         }

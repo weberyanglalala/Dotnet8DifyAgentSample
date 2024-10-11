@@ -19,19 +19,19 @@ public class LineMessageService
         _travelChatService = travelChatService;
     }
 
-    public async Task<string> ProcessMessageAsync(string lineUserId, string messageContent)
+    public async Task<string> ProcessMessageAsync(string lineUserId, string displayName, string messageContent)
     {
         // 確認使用者是否存在，若不存在新增一個
-        var user = await CreateUserIfNotExisted(lineUserId);
+        var user = await CreateUserIfNotExisted(lineUserId, displayName);
         // 取得使用者 id，根據使用者 id 搜尋是否有存在的對話紀錄
         var (conversation, reminderMessage) = await GetOrCreateConversation(user.UserId);
-        
+
         if (conversation == null)
         {
             // Handle the unexpected case where no conversation is returned
             return "取得對談紀錄失敗，請重新嘗試";
         }
-        
+
         var summarization = conversation.Summarization ?? "目前沒有相關對話紀錄";
         // 將對話紀錄新增一筆訊息
         await CreateMessageByConversationIdAsync(conversation.ConversationId, messageContent, MessageType.User);
@@ -39,13 +39,14 @@ public class LineMessageService
         var chatResponse = await _travelChatService.GetChatResponseByHistoryAndInput(summarization, messageContent);
         // 將回應新增一筆訊息
         await CreateMessageByConversationIdAsync(conversation.ConversationId, chatResponse, MessageType.System);
-        // 6. 更新對話紀錄的摘要
+        // 更新對話紀錄的摘要
         await UpdateSummarization(conversation.ConversationId);
-        // 7. 回傳訊息 If there's a reminder message, prepend it to the chat response
+        // 回傳訊息 If there's a reminder message, prepend it to the chat response
         if (!string.IsNullOrEmpty(reminderMessage))
         {
             chatResponse = $"{reminderMessage}{Environment.NewLine}{Environment.NewLine}{chatResponse}";
         }
+
         return chatResponse;
     }
 
@@ -69,12 +70,12 @@ public class LineMessageService
         return conversation;
     }
 
-    private async Task<User> CreateUserIfNotExisted(string lineUserId)
+    private async Task<User> CreateUserIfNotExisted(string lineUserId, string displayName)
     {
         var user = await _repository.GetUserByLineUserIdAsync(lineUserId);
         if (user == null)
         {
-            user = new User { LineUserId = lineUserId, CreateAt = DateTime.Now };
+            user = new User { LineUserId = lineUserId, Name = displayName, CreateAt = DateTime.Now };
             await _repository.CreateUserAsync(user);
         }
 
