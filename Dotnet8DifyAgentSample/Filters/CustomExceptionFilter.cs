@@ -21,8 +21,6 @@ namespace Dotnet8DifyAgentSample.Filters
         {
             var request = context.HttpContext.Request;
             var userId = context.HttpContext.User.Identity?.Name ?? "Anonymous";
-	 
-            request.Body.Position = 0;
             var requestDetails = new Dictionary<string, object>
             {
                 ["UserId"] = userId,
